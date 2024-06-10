@@ -16,13 +16,12 @@ defmodule Servy.Handler do
       |> String.split("\n")
       |> List.first()
       |>String.split(" ")
-      
+
     %{method: method, path: path, resp_body: ""}
   end
 
   def route(conv) do
-    # TODO: Create a new map that also has the response body:
-    conv = %{method: "GET", path: "/wildthings", resp_body: "Bears, Lions, Tigers"}
+    %{conv | resp_body: "Bears, Lions, Tigers, Sharks"}
   end
 
   def format_response(conv) do

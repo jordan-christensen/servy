@@ -1,7 +1,7 @@
 defmodule Servy.Handler do
   @moduledoc "Handles HTTP requests."
 
-  @pages_path Path.expand("../pages", __DIR__)
+  @pages_path Path.expand("pages", File.cwd!)
 
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
@@ -47,23 +47,6 @@ defmodule Servy.Handler do
   def route(%{path: path} = conv) do
     %{conv | status: 404, resp_body: "No #{path} here!"}
   end
-
-  # def route(%{method: "GET", path: "/about"} = conv) do
-  #   file =
-  #     Path.expand("../pages", __DIR__)
-  #     |> Path.join("about.html")
-
-  #   case File.read(file) do
-  #     {:ok, content} ->
-  #       %{conv | status: 200, resp_body: content}
-
-  #     {:error, :enoent} ->
-  #       %{conv | status: 404, resp_body: "File not found"}
-
-  #     {:error, reason} ->
-  #       %{conv | status: 500, resp_body: "File error: #{reason}"}
-  #   end
-  # end
 
   def format_response(conv) do
     """

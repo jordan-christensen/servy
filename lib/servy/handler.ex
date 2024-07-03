@@ -25,15 +25,16 @@ defmodule Servy.Handler do
     parent = self() # the request-handling process
 
     spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
+    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
 
     snapshot1 = receive do {:result, filename} -> filename end
+    snapshot2 = receive do {:result, filename} -> filename end
+    snapshot3 = receive do {:result, filename} -> filename end
 
-    # snapshot2 = VideoCam.get_snapshot("cam-2")
-    # snapshot3 = VideoCam.get_snapshot("cam-3")
+    snapshots = [snapshot1, snapshot2, snapshot3]
 
-    # snapshots = [snapshot1, snapshot2, snapshot3]
-
-    %{conv | status: 200, resp_body: inspect(snapshot1)}
+    %{conv | status: 200, resp_body: inspect(snapshots)}
   end
 
   def route(%Conv{method: "GET", path: "/kaboom"} = conv) do

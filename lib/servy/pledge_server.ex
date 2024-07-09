@@ -24,7 +24,7 @@ defmodule Servy.PledgeServer do
     end
   end
 
-  create_pledge(name, amount) do
+  def create_pledge(name, amount) do
     send(@name, {self(), :create_pledge, name, amount})
 
     receive do

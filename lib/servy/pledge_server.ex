@@ -7,7 +7,7 @@ defmodule Servy.PledgeServer do
     defstruct cache_size: 3, pledges: []
   end
 
-  # Client interface functions
+  # Client Interface
 
   def start do
     IO.puts("Starting the pledge server...")
@@ -18,12 +18,12 @@ defmodule Servy.PledgeServer do
     GenServer.call(@name, {:create_pledge, name, amount})
   end
 
-  def recent_pledges() do
-    GenServer.call(@name, {:recent_pledges})
+  def recent_pledges do
+    GenServer.call(@name, :recent_pledges)
   end
 
-  def total_pledged() do
-    GenServer.call(@name, {:total_pledged})
+  def total_pledged do
+    GenServer.call(@name, :total_pledged)
   end
 
   def clear do
@@ -31,7 +31,7 @@ defmodule Servy.PledgeServer do
   end
 
   def set_cache_size(size) do
-    GenServer.cast @name, {:set_cache_size, size}
+    GenServer.cast(@name, {:set_cache_size, size})
   end
 
   # Server Callbacks
@@ -47,7 +47,7 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast({:set_cache_size, size}, state) do
-    new_state = %{ state | cache_size: size }
+    new_state = %{state | cache_size: size}
     {:noreply, new_state}
   end
 
@@ -60,7 +60,7 @@ defmodule Servy.PledgeServer do
     {:reply, state.pledges, state}
   end
 
-  def handle_call(:create_pledge, _from, state) do
+  def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id} = send_pledge_to_service(name, amount)
     most_recent_pledges = Enum.take(state.pledges, state.cache_size - 1)
     cached_pledges = [{name, amount} | most_recent_pledges]
@@ -69,7 +69,7 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_info(message, state) do
-    IO.puts "Can't touch this! #{inspect message}"
+    IO.puts("Can't touch this! #{inspect(message)}")
     {:noreply, state}
   end
 
@@ -86,26 +86,23 @@ defmodule Servy.PledgeServer do
   end
 end
 
-alias Servy.PledgeServer
+# alias Servy.PledgeServer
 
-{:ok, pid} = PledgeServer.start()
+# {:ok, pid} = PledgeServer.start()
 
-# send(pid, {:stop, "hammertime"})
+# send pid, {:stop, "hammertime"}
 
-PledgeServer.set_cache_size(4)
+# PledgeServer.set_cache_size(4)
 
-IO.inspect(PledgeServer.create_pledge("larry", 10))
+# IO.inspect PledgeServer.create_pledge("larry", 10)
 
-# PledgeServer.clear()
+# # PledgeServer.clear()
 
-# IO.inspect(PledgeServer.create_pledge("moe", 20))
-# IO.inspect(PledgeServer.create_pledge("curly", 30))
-# IO.inspect(PledgeServer.create_pledge("daisy", 40))
+# # IO.inspect PledgeServer.create_pledge("moe", 20)
+# # IO.inspect PledgeServer.create_pledge("curly", 30)
+# # IO.inspect PledgeServer.create_pledge("daisy", 40)
+# # IO.inspect PledgeServer.create_pledge("grace", 50)
 
-# IO.inspect(PledgeServer.create_pledge("grace", 50))
+# IO.inspect PledgeServer.recent_pledges()
 
-IO.inspect(PledgeServer.recent_pledges())
-
-IO.inspect(PledgeServer.total_pledged())
-
-IO.inspect(Process.info(pid, :messages))
+# IO.inspect PledgeServer.total_pledged()

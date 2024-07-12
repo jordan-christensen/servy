@@ -1,5 +1,4 @@
 defmodule Servy.PledgeServer do
-
   @name :pledge_server
 
   use GenServer
@@ -11,28 +10,28 @@ defmodule Servy.PledgeServer do
   # Client Interface
 
   def start_link(_arg) do
-    IO.puts "Starting the pledge server..."
+    IO.puts("Starting the pledge server...")
     GenServer.start_link(__MODULE__, %State{}, name: @name)
   end
 
   def create_pledge(name, amount) do
-    GenServer.call @name, {:create_pledge, name, amount}
+    GenServer.call(@name, {:create_pledge, name, amount})
   end
 
   def recent_pledges do
-    GenServer.call @name, :recent_pledges
+    GenServer.call(@name, :recent_pledges)
   end
 
   def total_pledged do
-    GenServer.call @name, :total_pledged
+    GenServer.call(@name, :total_pledged)
   end
 
   def clear do
-    GenServer.cast @name, :clear
+    GenServer.cast(@name, :clear)
   end
 
   def set_cache_size(size) do
-    GenServer.cast @name, {:set_cache_size, size}
+    GenServer.cast(@name, {:set_cache_size, size})
   end
 
   # Server Callbacks
@@ -44,16 +43,16 @@ defmodule Servy.PledgeServer do
   end
 
   def handle_cast(:clear, state) do
-    {:noreply, %{ state | pledges: []}}
+    {:noreply, %{state | pledges: []}}
   end
 
   def handle_cast({:set_cache_size, size}, state) do
-    new_state = %{ state | cache_size: size}
+    new_state = %{state | cache_size: size}
     {:noreply, new_state}
   end
 
   def handle_call(:total_pledged, _from, state) do
-    total = Enum.map(state.pledges, &elem(&1, 1)) |> Enum.sum
+    total = Enum.map(state.pledges, &elem(&1, 1)) |> Enum.sum()
     {:reply, total, state}
   end
 
@@ -64,13 +63,13 @@ defmodule Servy.PledgeServer do
   def handle_call({:create_pledge, name, amount}, _from, state) do
     {:ok, id} = send_pledge_to_service(name, amount)
     most_recent_pledges = Enum.take(state.pledges, state.cache_size - 1)
-    cached_pledges = [ {name, amount} | most_recent_pledges ]
+    cached_pledges = [{name, amount} | most_recent_pledges]
     new_state = %{state | pledges: cached_pledges}
     {:reply, id, new_state}
   end
 
   def handle_info(message, state) do
-    IO.puts "Can't touch this! #{inspect message}"
+    IO.puts("Can't touch this! #{inspect(message)}")
     {:noreply, state}
   end
 
@@ -83,9 +82,8 @@ defmodule Servy.PledgeServer do
     # CODE GOES HERE TO FETCH RECENT PLEDGES FROM EXTERNAL SERVICE
 
     # Example return value:
-    [ {"wilma", 15}, {"fred", 25} ]
+    [{"wilma", 15}, {"fred", 25}]
   end
-
 end
 
 # alias Servy.PledgeServer

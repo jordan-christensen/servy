@@ -3,7 +3,6 @@ defmodule Servy.Handler do
 
   alias Servy.Conv
   alias Servy.BearController
-  alias Servy.VideoCam
 
   @pages_path Path.expand("../../pages", __DIR__)
 
@@ -15,7 +14,7 @@ defmodule Servy.Handler do
     request
     |> parse
     |> rewrite_path
-    # |> log
+    |> log
     |> route
     |> track
     |> format_response
@@ -35,7 +34,7 @@ defmodule Servy.Handler do
     %{conv | status: 200, resp_body: inspect(sensor_data)}
   end
 
-  def route(%Conv{method: "GET", path: "/kaboom"} = conv) do
+  def route(%Conv{method: "GET", path: "/kaboom"}) do
     raise "Kaboom!"
   end
 
